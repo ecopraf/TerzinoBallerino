@@ -63,7 +63,17 @@ Le foto originali restano come sorgente; in `assets/` ci sono le versioni ottimi
 I punteggi degli amici si salvano in `localStorage` sul dispositivo: passatevi il telefono
 e sfidatevi.
 
-## 🚀 Pubblicazione
+## 🚀 Giocare online
 
-Il workflow `pages.yml` pubblica il gioco su **GitHub Pages** ad ogni push su `main`.
-In alternativa apri `index.html` in locale: non serve nessun server.
+**Link pronto all'uso (nessuna configurazione):**
+
+👉 https://htmlpreview.github.io/?https://raw.githubusercontent.com/ecopraf/TerzinoBallerino/main/gioco.html
+
+`gioco.html` è la versione **tutto-in-uno**: le foto sono incorporate come data URI, quindi
+è un solo file e non dipende da altri file del repository. Ottimo da mandare agli amici.
+
+**GitHub Pages** (link stabile `https://ecopraf.github.io/TerzinoBallerino/`):
+il workflow `pages.yml` è già pronto, ma va abilitato una volta a mano in
+**Settings → Pages → Source: GitHub Actions**. Da lì in poi si aggiorna da solo ad ogni push.
+
+**In locale:** apri `index.html` (o `gioco.html`) con doppio clic, nessun server necessario.
