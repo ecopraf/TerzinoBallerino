@@ -485,7 +485,7 @@ function spawnObstacle(){
   } else if(Math.random()<0.5){
     obstacles.push({ type:'cone', x:W+40, y:groundY-26, w:34, h:26, repelled:false });
   } else {
-    const h=rand(78,98);
+    const h=rand(112,132);   /* ~come il protagonista (120px): non devono sembrare nani */
     obstacles.push({ type:'rival', key:pickRivalKey(),
       x:W+40, y:groundY-h, w:rand(40,50), h, bob:rand(0,TAU), repelled:false });
   }
@@ -830,7 +830,7 @@ function drawObstacles(){
     } else {
       const bob=Math.sin(o.bob)*3;
       const m=(MEDIA[o.key]&&MEDIA[o.key].img)?MEDIA[o.key]:((MEDIA.rival&&MEDIA.rival.img)?MEDIA.rival:null);
-      if(m) drawStickerH(m, o.x, o.y+o.h+bob, o.h*1.1, 0);
+      if(m) drawStickerH(m, o.x, o.y+o.h+bob, o.h, 0);
       else { ctx.font='42px serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
              ctx.fillText('🏃', o.x, o.y+o.h+bob); }
     }

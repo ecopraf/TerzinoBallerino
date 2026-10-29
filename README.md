@@ -16,7 +16,7 @@ e da desktop.
 | **Claudio** | la persona reale; in campo è il **Vater**, che entra e bacchetta |
 | **Vater arbitro** | ogni tanto Claudio entra con il **completo da arbitro** 🟨 |
 | **Marco** | il **portiere** 🧤: esce dai pali e para in tuffo, muovendosi su e giù |
-| **Gli avversari** | 19 rivali 🏃 che ti rubano palla (Dario, Silvio, AnneX, John…) e ruotano da soli |
+| **Gli avversari** | 19 rivali 🏃 a figura intera, in scala con Luciano (Dario, Silvio, AnneX, John…) |
 | **BonusAnnex** | il **bonus** 🎁 che *regala* energia: +2 (o 120 punti a barra piena) |
 
 Le foto nuove si aggiungono come **sticker** da *Le mie foto*; per gli avversari basta

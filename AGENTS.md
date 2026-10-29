@@ -21,8 +21,11 @@ come file singolo. **Va rigenerato ogni volta che si tocca `index.html` o gli as
   l'asset `assets/rival_<nome>.png` e aggiungere la riga in `MEDIA`**, nessun altro
   intervento. Attualmente **19 avversari** (Ago, Angelo, AnneX, Claudione, Cori,
   Daniele, Dario, Gae, John, Luca, Luciano, Ludo, Marino, Nonny, Pietro, Raffaele,
-  Sarra, Silvio, Speranzini). Disegnati a **44×88** px contro un protagonista
-  ~60×90: proporzioni volutamente simili, non farli rimpicciolire.
+  Sarra, Silvio, Speranzini). Sono disegnati con `drawStickerH(m, x, feetY, o.h)`:
+  **l'altezza disegnata è esattamente `o.h`** (niente moltiplicatori nascosti, così
+  hitbox e figura coincidono). `o.h = rand(112,132)`, cioè **in scala col
+  protagonista** (disegnato a 120px): i rivali devono *sembrare persone*, non nani.
+  Il salto ha apice ~156px, quindi restano superabili anche al massimo.
 - **BonusAnnex** → `assets/bonus_annex.png`. **Non è un avversario**: è un bonus
   che *regala* energia. Vedi "Bonus Annex" qui sotto.
 
