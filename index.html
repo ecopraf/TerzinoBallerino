@@ -369,12 +369,40 @@ function loadProfile(){
   try{ const p=JSON.parse(localStorage.getItem('tb_profile')||'null'); if(p&&typeof p==='object') PROFILE=Object.assign({name:DEFAULT_NAME,stickers:{}},p); }catch(e){}
   if(!PROFILE.stickers) PROFILE.stickers={};
   if(!PROFILE.name || PROFILE.name==='Il Terzino') PROFILE.name=DEFAULT_NAME;
+  healBuiltinPlayerStickers();
+}
+/* Profili salvati da versioni precedenti possono contenere il percorso di serie
+   come se fosse una foto personale (bastava premere "Fatto"): lo si ripulisce,
+   cosi' il selettore Ballerino/Playboy non resta bloccato. */
+function healBuiltinPlayerStickers(){
+  let touched=false;
+  if(isBuiltinPlayerSrc(PROFILE.stickers.player)){ delete PROFILE.stickers.player; touched=true; }
+  try{
+    const saved=JSON.parse(localStorage.getItem('tb_stickers')||'{}');
+    if(isBuiltinPlayerSrc(saved.player) && 'player' in saved){ delete saved.player; localStorage.setItem('tb_stickers', JSON.stringify(saved)); touched=true; }
+  }catch(e){}
+  if(touched) persistProfile();
 }
 function persistProfile(){ try{ localStorage.setItem('tb_profile', JSON.stringify(PROFILE)); }catch(e){ alert('Impossibile salvare il profilo: immagini troppo pesanti.'); } }
 const VARIANT_KEY='tb_variant';
+/* Le due versioni "di serie" di Luciano. NON sono foto personalizzate: se il
+   profilo salva uno di questi percorsi (cosa che succede premendo "Fatto" in
+   "Le mie foto") il selettore non deve disattivarsi. In gioco.html questi
+   percorsi sono gia' diventati data URI, quindi il confronto vale anche li'. */
+const PLAYER_SRC = { ballerino:'assets/player.png', playboy:'assets/player_playboy.png' };
+function isBuiltinPlayerSrc(s){ return !s || s===PLAYER_SRC.ballerino || s===PLAYER_SRC.playboy; }
 function currentVariant(){ return PROFILE.variant || localStorage.getItem(VARIANT_KEY) || 'ballerino'; }
-function customPlayerSrc(){ return PROFILE.stickers.player || localStorageSource('player') || null; }
-function playerSrcForVariant(){ return currentVariant()==='playboy' ? 'assets/player_playboy.png' : 'assets/player.png'; }
+function customPlayerSrc(){
+  const s = PROFILE.stickers.player || localStorageSource('player') || null;
+  return isBuiltinPlayerSrc(s) ? null : s;   /* una foto di serie non e' una personalizzazione */
+}
+function playerSrcForVariant(){ return PLAYER_SRC[currentVariant()==='playboy' ? 'playboy' : 'ballerino']; }
+/* salva la foto del giocatore solo se e' davvero personalizzata */
+function saveCurrentPlayerSticker(){
+  const s = MEDIA.player.src;
+  if(isBuiltinPlayerSrc(s)) delete PROFILE.stickers.player;
+  else PROFILE.stickers.player = s;
+}
 function setVariant(v){
   PROFILE.variant=v; try{ localStorage.setItem(VARIANT_KEY,v); }catch(e){}
   if(!customPlayerSrc()){ MEDIA.player.src=playerSrcForVariant(); loadImg(MEDIA.player, MEDIA.player.src, refreshHero); }
@@ -390,6 +418,8 @@ function markVariant(){
   const note = customPlayerSrc();
   b.disabled=pl.disabled=!!note;
   b.style.opacity=pl.style.opacity= note?'.45':'1';
+  const why = note ? 'Stai usando una tua foto: premi Reset per tornare a Ballerino/Playboy' : '';
+  b.title=why; pl.title=why;
 }
 function applyProfileToMedia(){
   for(const k in MEDIA){
@@ -1041,7 +1071,7 @@ function renderLeaderboard(el, opts){
 /* ---------- profile export / import ---------- */
 function exportProfile(){
   PROFILE.name = ($('profileName').value||DEFAULT_NAME).trim().slice(0,14);
-  PROFILE.stickers.player = MEDIA.player.src;
+  saveCurrentPlayerSticker();
   persistProfile(); refreshHero();
   const payload = { v:1, kind:'terzino-character', name:PROFILE.name, stickers:PROFILE.stickers };
   const blob = new Blob([JSON.stringify(payload)], {type:'application/json'});
@@ -1285,12 +1315,12 @@ $('btnAddScore').onclick = ()=>{
 };
 $('btnClearScores').onclick = ()=>{ if(confirm('Azzerare la classifica?')){ SCORES=[]; persistScores(); renderLeaderboard($('lbFull')); } };
 $('btnCustom').onclick = ()=>{ buildSlots(); $('profileName').value=PROFILE.name; show('custom'); };
-$('btnBackCustom').onclick = ()=>{ PROFILE.name=($('profileName').value||DEFAULT_NAME).trim().slice(0,14); PROFILE.stickers.player=MEDIA.player.src; persistProfile(); refreshHero(); show('start'); };
+$('btnBackCustom').onclick = ()=>{ PROFILE.name=($('profileName').value||DEFAULT_NAME).trim().slice(0,14); saveCurrentPlayerSticker(); persistProfile(); markVariant(); refreshHero(); show('start'); };
 $('btnResetCustom').onclick = resetStickers;
 $('btnShare').onclick = share;
 $('btnVarBallerino').onclick = ()=> setVariant('ballerino');
 $('btnVarPlayboy').onclick  = ()=> setVariant('playboy');
-$('btnProfileSave').onclick = ()=>{ PROFILE.name=($('profileName').value||DEFAULT_NAME).trim().slice(0,14); PROFILE.stickers.player=MEDIA.player.src; persistProfile(); refreshHero(); toast('Profilo salvato'); };
+$('btnProfileSave').onclick = ()=>{ PROFILE.name=($('profileName').value||DEFAULT_NAME).trim().slice(0,14); saveCurrentPlayerSticker(); persistProfile(); markVariant(); refreshHero(); toast('Profilo salvato'); };
 $('btnProfileExport').onclick = exportProfile;
 $('btnProfileImport').onclick = importProfile;
 

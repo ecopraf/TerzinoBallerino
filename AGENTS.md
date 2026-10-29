@@ -70,7 +70,11 @@ avversario: è un **bonus che regala energia**. Spawna raro (`G.annexTimer`, ogn
 - **Varianti di Luciano**: `MEDIA.player` serve sia il menu sia il gioco. La versione
   scelta è in `PROFILE.variant` (`tb_variant` in localStorage). Se l'utente carica una
   **foto personalizzata** (`customPlayerSrc()`), le due versioni si disabilitano e vince
-  sempre la foto caricata.
+  sempre la foto caricata. Attenzione: `customPlayerSrc()` deve ignorare i percorsi di
+  serie (`assets/player.png` / `assets/player_playboy.png`, vedi `isBuiltinPlayerSrc()`),
+  altrimenti basta premere "Fatto" in "Le mie foto" per scriverli in
+  `PROFILE.stickers.player` e **bloccare il selettore** sulla variante attiva.
+  `healBuiltinPlayerStickers()` ripulisce i profili gia' salvati in quello stato.
 - Il minigioco usa nodi DOM (`#mgPlayer`, `#mgVater`): `mgPaintFaces()` inietta le foto
   all'apertura e rispetta la variante arbitro (`MG.ref`). CSS `object-fit:contain`.
 - Collisioni: il giocatore è un punto ai piedi (`player.y-26`), coerente con l'ancoraggio.
