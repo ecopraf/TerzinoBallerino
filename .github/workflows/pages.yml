@@ -16,6 +16,10 @@ concurrency:
 
 jobs:
   deploy:
+    # Il job parte solo se GitHub Pages è già abilitato sul repository
+    # (Settings → Pages → Source: GitHub Actions). Altrimenti viene saltato
+    # senza far fallire la pipeline.
+    if: github.event.repository.has_pages
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -23,8 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
