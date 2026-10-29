@@ -491,7 +491,7 @@ function spawnObstacle(){
   }
   // Marco, il portiere: ogni tanto esce dai pali e para in tuffo (largo e basso)
   if(G.t>12 && MEDIA.keeper.img && Math.random()<0.10){
-    const w=rand(66,84), h=Math.round(w*0.5);
+    const w=rand(90,114), h=Math.round(w*0.5);   /* tuffo largo: prima era 66-84, troppo piccolo */
     obstacles.push({ type:'keeper', x:W+40, y:groundY-h, w, h, bob:rand(0,TAU), repelled:false });
   }
 }

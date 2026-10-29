@@ -15,7 +15,7 @@ e da desktop.
 | **Luciano** | il protagonista, in **due versioni**: *Ballerino* 🕺 e *Playboy* 😎 (si scelgono dal menu) |
 | **Claudio** | la persona reale; in campo è il **Vater**, che entra e bacchetta |
 | **Vater arbitro** | ogni tanto Claudio entra con il **completo da arbitro** 🟨 |
-| **Marco** | il **portiere** 🧤: esce dai pali e para in tuffo, muovendosi su e giù |
+| **Marco** | il **portiere** 🧤: esce dai pali e para in tuffo, muovendosi su e giù (in scala coi rivali) |
 | **Gli avversari** | 19 rivali 🏃 a figura intera, in scala con Luciano (Dario, Silvio, AnneX, John…) |
 | **BonusAnnex** | il **bonus** 🎁 che *regala* energia: +2 (o 120 punti a barra piena) |
 

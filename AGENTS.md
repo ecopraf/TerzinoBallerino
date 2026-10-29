@@ -13,7 +13,10 @@ come file singolo. **Va rigenerato ogni volta che si tocca `index.html` o gli as
 - **Vater** — il *ruolo* di Claudio nel gioco (il moralista che bacchetta).
   Variante casuale (~40%): **versione arbitro** → `assets/referee.png`.
 - **Marco** — il portiere → `assets/keeper.png`. Ostacolo che **oscilla in verticale**
-  (tipo "tuffo"), esce dai pali dopo i 12 s di gioco.
+  (tipo "tuffo"), esce dai pali dopo i 12 s di gioco. La foto è un tuffo (ratio ~2.2:1),
+  quindi è "largo e basso" di natura: `w=rand(90,114)`, `h=w*0.5`, disegnato
+  `drawSticker(..., o.w*1.15)` → **~107x54..135x68px**. Prima era 66-84 (~76x35):
+  troppo piccolo, sembrava un nano accanto ai rivali.
 - **Dario** — primo avversario → `assets/rival_dario.png`.
 - **Gli avversari** — tutte le foto `Avversario*.png` → `assets/rival_*.png`.
   Ruotano da sole tramite `rivalKeys()` (legge automaticamente tutte le chiavi
