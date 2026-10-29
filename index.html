@@ -271,7 +271,7 @@ const MEDIA = {
   item:   { src:'assets/item.png',   emoji:'🎩', img:null },
   logo:   { src:'assets/logo.png',   emoji:'🪩', img:null },
 };
-function loadImg(m, src){ const im=new Image(); im.onload=()=>{ m.img=im; }; im.onerror=()=>{}; im.src=src; }
+function loadImg(m, src, cb){ const im=new Image(); im.onload=()=>{ m.img=im; if(cb) cb(); }; im.onerror=()=>{}; im.src=src; }
 function saveSticker(k, src){
   const saved = JSON.parse(localStorage.getItem('tb_stickers')||'{}');
   saved[k]=src;
@@ -324,7 +324,7 @@ function loadProfile(){
   if(!PROFILE.name || PROFILE.name==='Il Terzino') PROFILE.name=DEFAULT_NAME;
 }
 function persistProfile(){ try{ localStorage.setItem('tb_profile', JSON.stringify(PROFILE)); }catch(e){ alert('Impossibile salvare il profilo: immagini troppo pesanti.'); } }
-function applyProfileToMedia(){ for(const k in MEDIA){ const src=PROFILE.stickers[k]||localStorageSource(k)||MEDIA[k].src; MEDIA[k].src=src; loadImg(MEDIA[k],src); } }
+function applyProfileToMedia(){ for(const k in MEDIA){ const src=PROFILE.stickers[k]||localStorageSource(k)||MEDIA[k].src; MEDIA[k].src=src; loadImg(MEDIA[k],src, k==='player'?refreshHero:null); } }
 
 /* ---------- leaderboard (scores degli amici) ---------- */
 const LB_KEY='tb_scores';
