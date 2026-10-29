@@ -4,6 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Il Terzino Ballerino</title>
+<meta name="description" content="Il Terzino Ballerino: arcade calcistico con Luciano, gli outfit improbabili, la BALLA MODE e il Vater che bacchetta. Gioca ora!">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Il Terzino Ballerino">
+<meta property="og:title" content="Il Terzino Ballerino ⚽🕺">
+<meta property="og:description" content="Schiva palloni e avversari, raccogli gli outfit improbabili ed entra in BALLA MODE. Occhio al Vater: entra Claudio e bacchetta!">
+<meta property="og:image" content="https://ecopraf.github.io/TerzinoBallerino/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://ecopraf.github.io/TerzinoBallerino/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Il Terzino Ballerino ⚽🕺">
+<meta name="twitter:description" content="Arcade calcistico: schiva, balla e respingi tutto. Attenzione al Vater!">
+<meta name="twitter:image" content="https://ecopraf.github.io/TerzinoBallerino/og-image.png">
+<meta name="theme-color" content="#06170c">
 <style>
   :root{ --lime:#c6ff00; --pink:#ff2d95; --sun:#ffd400; --ink:#06170c; }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -34,8 +48,8 @@
   .card{background:rgba(0,0,0,.35);border:2px dashed rgba(255,255,255,.25);border-radius:18px;
     padding:14px 18px;max-width:560px;width:100%;text-align:left;font-size:clamp(12px,3.4vw,15px);line-height:1.6}
   .k{display:inline-block;background:#fff;color:#06170c;font-weight:800;border-radius:8px;padding:1px 8px;margin:0 2px}
-  .sticker{width:clamp(110px,32vw,175px);height:clamp(140px,41vw,225px);border-radius:22px;display:grid;place-items:center;
-    font-size:clamp(56px,19vw,100px);overflow:hidden;background:radial-gradient(circle at 35% 30%, #fff, #d8e6dc);
+  .sticker{width:clamp(78px,22vw,124px);height:clamp(96px,27vw,152px);border-radius:18px;display:grid;place-items:center;
+    font-size:clamp(40px,13vw,68px);overflow:hidden;background:radial-gradient(circle at 35% 30%, #fff, #d8e6dc);
     box-shadow:0 10px 30px rgba(0,0,0,.5), inset 0 0 0 6px var(--lime);animation:boing 1.6s ease-in-out infinite;padding:6px}
   .sticker img{width:100%;height:100%;object-fit:contain;border-radius:16px}
   @keyframes boing{0%,100%{transform:rotate(-6deg) scale(1)}50%{transform:rotate(6deg) scale(1.06)}}
@@ -127,6 +141,10 @@
   <h1>Il Terzino<br>Ballerino</h1>
   <div class="sticker" id="heroSticker">🕺</div>
   <div class="heroName" id="heroName">Luciano</div>
+  <div class="row" id="variantRow">
+    <button class="btn alt sm" id="btnVarBallerino">🕺 Versione Ballerino</button>
+    <button class="btn alt sm" id="btnVarPlayboy">😎 Versione Playboy</button>
+  </div>
   <div class="sub">Aiuta <b>Luciano</b>: schiva palloni e avversari, raccogli gli <b>outfit improbabili</b> per caricare l'<b>ENERGIA</b>. A barra piena entra in <b>BALLA MODE</b> e respinge tutto ballando. Occhio al <b>Vater</b>: entra Claudio e bacchetta.</div>
   <button class="btn" id="btnPlay">▶ Gioca</button>
   <div class="best">Record: <span id="bestStart">0</span> &nbsp;·&nbsp; <span id="bestDistStart">0 m</span></div>
@@ -230,7 +248,8 @@
   <h2>Come si gioca</h2>
   <div class="card">
     <p><span class="k">Spazio</span> / <span class="k">↑</span> / tocca lo schermo per <b>saltare</b> (doppio salto disponibile).</p>
-    <p>🏃 <b>Avversari</b> e 🔶 <b>coni</b>: a terra. ⚽ <b>Palloni</b>: arrivano anche in alto.</p>
+    <p>🏃 <b>Avversari</b> e 🔶 <b>coni</b>: a terra. ⚽ <b>Palloni</b>: arrivano anche in alto. 🧤 <b>Marco il portiere</b>: esce dai pali e para in tuffo, dagli il tempo giusto.</p>
+    <p>🕺 <b>Due versioni di Luciano</b>: dal menu scegli <b>Ballerino</b> o <b>Playboy</b>.</p>
     <p>🎩 <b>Outfit</b>: +25 punti e <b>+1 ENERGIA</b>. L'energia si accumula e resta lì: non si consuma da sola.</p>
     <p>🪩 <b>ENERGIA al massimo</b> → <b>BALLA MODE</b>: Luciano balla e <b>respinge tutto</b> (avversari, palloni, coni) rimandandoli indietro. Ogni respinta consuma 1 di energia: più outfit prendi, più a lungo balli.</p>
     <p>🧓 <b>Vater</b>: entra <b>Claudio</b>, il moralista del pallone. Convinto di «disegnare calcio» pur non muovendosi mai dal cerchio di centrocampo. Si pianta lì e bacchetta chi passa: <b>saltalo</b>. Tre bacchettate = richiamato in panchina. In BALLA MODE lo respingi anche lui.</p>
@@ -264,12 +283,16 @@ const toastEl = document.getElementById('toast');
 
 /* ---------- media (sticker) ---------- */
 const MEDIA = {
-  player: { src:'assets/player.png', emoji:'🕺', img:null },
-  ball:   { src:'assets/ball.png',   emoji:'⚽', img:null },
-  rival:  { src:'assets/rival.png',  emoji:'🏃', img:null },
-  coach:  { src:'assets/coach.png',  emoji:'🧓', img:null },
-  item:   { src:'assets/item.png',   emoji:'🎩', img:null },
-  logo:   { src:'assets/logo.png',   emoji:'🪩', img:null },
+  player:  { src:'assets/player.png',          emoji:'🕺', img:null },
+  player2: { src:'assets/player_playboy.png',  emoji:'😎', img:null },
+  ball:    { src:'assets/ball.png',            emoji:'⚽', img:null },
+  rival:   { src:'assets/rival.png',           emoji:'🏃', img:null },
+  rival2:  { src:'assets/rival_dario.png',     emoji:'🏃', img:null },
+  keeper:  { src:'assets/keeper.png',          emoji:'🧤', img:null },
+  coach:   { src:'assets/coach.png',           emoji:'🧓', img:null },
+  referee: { src:'assets/referee.png',         emoji:'🟨', img:null },
+  item:    { src:'assets/item.png',            emoji:'🎩', img:null },
+  logo:    { src:'assets/logo.png',            emoji:'🪩', img:null },
 };
 function loadImg(m, src, cb){ const im=new Image(); im.onload=()=>{ m.img=im; if(cb) cb(); }; im.onerror=()=>{}; im.src=src; }
 function saveSticker(k, src){
@@ -324,7 +347,34 @@ function loadProfile(){
   if(!PROFILE.name || PROFILE.name==='Il Terzino') PROFILE.name=DEFAULT_NAME;
 }
 function persistProfile(){ try{ localStorage.setItem('tb_profile', JSON.stringify(PROFILE)); }catch(e){ alert('Impossibile salvare il profilo: immagini troppo pesanti.'); } }
-function applyProfileToMedia(){ for(const k in MEDIA){ const src=PROFILE.stickers[k]||localStorageSource(k)||MEDIA[k].src; MEDIA[k].src=src; loadImg(MEDIA[k],src, k==='player'?refreshHero:null); } }
+const VARIANT_KEY='tb_variant';
+function currentVariant(){ return PROFILE.variant || localStorage.getItem(VARIANT_KEY) || 'ballerino'; }
+function customPlayerSrc(){ return PROFILE.stickers.player || localStorageSource('player') || null; }
+function playerSrcForVariant(){ return currentVariant()==='playboy' ? 'assets/player_playboy.png' : 'assets/player.png'; }
+function setVariant(v){
+  PROFILE.variant=v; try{ localStorage.setItem(VARIANT_KEY,v); }catch(e){}
+  if(!customPlayerSrc()){ MEDIA.player.src=playerSrcForVariant(); loadImg(MEDIA.player, MEDIA.player.src, refreshHero); }
+  markVariant(); if(MG.on) mgPaintFaces();
+  toast(v==='playboy' ? 'Luciano versione Playboy' : 'Luciano versione Ballerino');
+}
+function markVariant(){
+  const v=currentVariant(), b=$('btnVarBallerino'), pl=$('btnVarPlayboy');
+  if(!b||!pl) return;
+  const on='3px solid var(--lime)', off='3px solid transparent';
+  b.style.outline = v==='playboy'?off:on;
+  pl.style.outline= v==='playboy'?on:off;
+  const note = customPlayerSrc();
+  b.disabled=pl.disabled=!!note;
+  b.style.opacity=pl.style.opacity= note?'.45':'1';
+}
+function applyProfileToMedia(){
+  for(const k in MEDIA){
+    let src=PROFILE.stickers[k]||localStorageSource(k)||MEDIA[k].src;
+    if(k==='player' && !customPlayerSrc()) src=playerSrcForVariant();
+    MEDIA[k].src=src;
+    loadImg(MEDIA[k], src, k==='player'?refreshHero:null);
+  }
+}
 
 /* ---------- leaderboard (scores degli amici) ---------- */
 const LB_KEY='tb_scores';
@@ -410,10 +460,18 @@ function spawnObstacle(){
   } else if(Math.random()<0.5){
     obstacles.push({ type:'cone', x:W+40, y:groundY-26, w:34, h:26, repelled:false });
   } else {
+    const keys=rivalKeys();
     const h=rand(46,62);
-    obstacles.push({ type:'rival', x:W+40, y:groundY-h, w:rand(34,42), h, bob:rand(0,TAU), repelled:false });
+    obstacles.push({ type:'rival', key: keys.length?pick(keys):'rival',
+      x:W+40, y:groundY-h, w:rand(34,42), h, bob:rand(0,TAU), repelled:false });
+  }
+  // Marco, il portiere: ogni tanto esce dai pali e para in tuffo
+  if(G.t>12 && MEDIA.keeper.img && Math.random()<0.10){
+    const h=rand(52,64);
+    obstacles.push({ type:'keeper', x:W+40, y:groundY-h, w:46, h, bob:rand(0,TAU), repelled:false });
   }
 }
+function rivalKeys(){ return ['rival','rival2'].filter(k=>MEDIA[k]&&MEDIA[k].img); }
 function spawnItem(){ items.push({ x:W+40, y:groundY-rand(60,180), r:18, e:pick(OUTFITS), bob:rand(0,TAU) }); }
 
 /* ---------- Vater (Claudio, il moralista che bacchetta) ---------- */
@@ -450,8 +508,9 @@ function tierFor(score){ let t=SCORE_TIERS[0]; for(const s of SCORE_TIERS){ if(s
 function vaterSpawnLine(){ return pick(tierFor(G.score).spawn); }
 function vaterHitLine(){ return pick(tierFor(G.score).hit); }
 function spawnCoach(){
-  coach = { x:W+70, vx:-300, phase:'enter', t:0, whack:0, bob:0, hit:false };
-  coachQuip = vaterSpawnLine();
+  const ref = MEDIA.referee.img && Math.random()<0.4;
+  coach = { x:W+70, vx:-300, phase:'enter', t:0, whack:0, bob:0, hit:false, ref };
+  coachQuip = ref ? '🟨 Il Vater si mette il completo da arbitro!' : vaterSpawnLine();
   sfx.warning(); toast(coachQuip);
 }
 function updateCoach(dt){
@@ -541,6 +600,7 @@ function update(dt){
     o.x -= scroll;
     if(o.type==='ball') o.spin += dt*8;
     if(o.type==='rival') o.bob += dt*12;
+    if(o.type==='keeper'){ o.bob += dt*3.4; o.y = groundY-o.h-(Math.sin(o.bob)*0.5+0.5)*46; }
     if(collidePlayer(o)){
       if(G.balla){ repelObstacle(o); }
       else if(G.invuln<=0){ gameOver(); return; }
@@ -686,9 +746,12 @@ function drawObstacles(){
       ctx.fillStyle='#fff'; ctx.fillRect(-o.w/2+6,o.h*0.45,o.w-12,6);
       ctx.fillStyle='#c94f00'; ctx.fillRect(-o.w/2-3,o.h,o.w+6,4);
       ctx.restore();
+    } else if(o.type==='keeper'){
+      drawSticker(MEDIA.keeper, o.x, o.y+o.h/2, o.h*1.35, 0, false);
     } else {
       const bob=Math.sin(o.bob)*3;
-      drawSticker(MEDIA.rival, o.x, o.y+o.h/2+bob, o.h*1.15, 0, false);
+      const m=MEDIA[o.key]||MEDIA.rival;
+      drawSticker(m, o.x, o.y+o.h/2+bob, o.h*1.15, 0, false);
     }
     if(o.repelled){ ctx.save(); ctx.globalAlpha=.5; ctx.fillStyle='#00e5ff';
       ctx.font='900 14px system-ui'; ctx.textAlign='center'; ctx.fillText('↩', o.x, (o.type==='ball'?o.y:o.y-8)); ctx.restore(); }
@@ -705,7 +768,8 @@ function drawCoach(){
     ctx.globalAlpha=0.35+0.3*Math.sin(G.t*18);
     ctx.strokeStyle='#ff2d95'; ctx.lineWidth=4;
     ctx.beginPath(); ctx.arc(cx,cy,50,0,TAU); ctx.stroke(); ctx.restore(); }
-  drawSticker(MEDIA.coach, cx, groundY-56+bob, 116, 0, false);
+  const cm = (coach.ref && MEDIA.referee.img) ? MEDIA.referee : MEDIA.coach;
+  drawSticker(cm, cx, groundY-56+bob, 116, 0, false);
   const swing = coach.whack>0 ? Math.sin(G.t*40)*0.9 : Math.sin(G.t*4)*0.18 - 0.35;
   ctx.save(); ctx.translate(cx-4, cy+2); ctx.rotate(swing);
   ctx.strokeStyle='#6b3f1d'; ctx.lineWidth=6; ctx.lineCap='round';
@@ -823,8 +887,12 @@ function gameOver(){
 /* ---------- custom stickers UI ---------- */
 const SLOT_DEFS=[
   {k:'player',label:'Protagonista — Luciano',hint:'di solito arriva dal profilo condiviso'},
+  {k:'player2',label:'Luciano — versione Playboy',hint:'la seconda divisa di Luciano'},
   {k:'rival', label:'Avversari',hint:'chi gli ruba palla'},
+  {k:'rival2',label:'Avversario — Dario',hint:'ruota con gli altri avversari'},
+  {k:'keeper',label:'Portiere — Marco',hint:'esce dai pali e para in tuffo'},
   {k:'coach', label:'Vater — Claudio',hint:'il moralista che bacchetta'},
+  {k:'referee',label:'Vater — versione arbitro',hint:'entra con il completo da arbitro'},
   {k:'ball',  label:'Pallone',hint:''},
   {k:'item',  label:'Outfit / bonus',hint:''},
   {k:'logo',  label:'Logo / disco',hint:''},
@@ -1036,6 +1104,7 @@ function mgWord(txt){ $('mgWord').textContent = txt; }
 function mgReset(){
   MG.score=0; MG.lives=3; MG.level=0; MG.playing=false; MG.armed=false;
   MG.phase='cool'; MG.cool=1.4; MG.t=0;
+  MG.ref = Math.random()<0.4;
   mgSetJump(false); mgSetPos(1);
   $('mgScore').textContent=0; $('mgBest').textContent=MG.best;
   mgLifes();
@@ -1104,9 +1173,11 @@ function mgLoop(now){
 /* ---------- share ---------- */
 function share(){
   const who=(PROFILE.name||DEFAULT_NAME);
-  const txt=`Sono a ${Math.floor(G.score)} punti al "Terzino Ballerino" ⚽🕺 (${who}, ${Math.floor(G.dist)} m). Battimi se ci riesci!`;
-  if(navigator.share){ navigator.share({title:'Il Terzino Ballerino',text:txt,url:location.href}).catch(()=>{}); }
-  else if(navigator.clipboard){ navigator.clipboard.writeText(txt+' '+location.href).then(()=>toast('Copiato! incollalo in chat'),()=>toast('Copia manuale: '+txt)); }
+  const url='https://ecopraf.github.io/TerzinoBallerino/';
+  const txt=`Sono a ${Math.floor(G.score)} punti al "Terzino Ballerino" ⚽🕺 (${who}, ${Math.floor(G.dist)} m). Battimi se ci riesci! ${url}`;
+  if(navigator.share){ navigator.share({title:'Il Terzino Ballerino',text:txt,url}).catch(()=>{}); return; }
+  if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>toast('Link copiato! incollalo in chat'),()=>toast('Copia manuale: '+url)); return; }
+  prompt('Copia il link e sfida l\'amico:', url);
 }
 
 /* ---------- wire buttons ---------- */
@@ -1127,6 +1198,8 @@ $('btnCustom').onclick = ()=>{ buildSlots(); $('profileName').value=PROFILE.name
 $('btnBackCustom').onclick = ()=>{ PROFILE.name=($('profileName').value||DEFAULT_NAME).trim().slice(0,14); PROFILE.stickers.player=MEDIA.player.src; persistProfile(); refreshHero(); show('start'); };
 $('btnResetCustom').onclick = resetStickers;
 $('btnShare').onclick = share;
+$('btnVarBallerino').onclick = ()=> setVariant('ballerino');
+$('btnVarPlayboy').onclick  = ()=> setVariant('playboy');
 $('btnProfileSave').onclick = ()=>{ PROFILE.name=($('profileName').value||DEFAULT_NAME).trim().slice(0,14); PROFILE.stickers.player=MEDIA.player.src; persistProfile(); refreshHero(); toast('Profilo salvato'); };
 $('btnProfileExport').onclick = exportProfile;
 $('btnProfileImport').onclick = importProfile;
@@ -1156,7 +1229,8 @@ $('btnProfileImport').onclick = importProfile;
 
 /* ---------- wire minigame ---------- */
 function mgPaintFaces(){
-  for(const [id,m] of [['mgPlayer',MEDIA.player],['mgVater',MEDIA.coach]]){
+  const vater = (MG.ref && MEDIA.referee.img) ? MEDIA.referee : MEDIA.coach;
+  for(const [id,m] of [['mgPlayer',MEDIA.player],['mgVater',vater]]){
     const el=$(id);
     if(m.img){ el.innerHTML=''; const im=document.createElement('img'); im.src=m.src; el.appendChild(im); }
     else el.textContent=m.emoji;
@@ -1183,6 +1257,7 @@ function boot(){
   loadProfile(); loadScores();
   applyProfileToMedia();
   $('bestStart').textContent=G.best; $('bestDistStart').textContent=G.bestDist+' m';
+  markVariant();
   refreshHero();
   reset(); G.state='menu';
   requestAnimationFrame(loop);

@@ -8,6 +8,19 @@ moralista del pallone che entra in campo e bacchetta.
 Gioco **single-file, zero dipendenze**: apri `index.html` e gioca. Funziona da telefono
 e da desktop.
 
+## 👥 I personaggi
+
+| Chi | Ruolo nel gioco |
+|---|---|
+| **Luciano** | il protagonista, in **due versioni**: *Ballerino* 🕺 e *Playboy* 😎 (si scelgono dal menu) |
+| **Claudio** | la persona reale; in campo è il **Vater**, che entra e bacchetta |
+| **Vater arbitro** | ogni tanto Claudio entra con il **completo da arbitro** 🟨 |
+| **Marco** | il **portiere** 🧤: esce dai pali e para in tuffo, muovendosi su e giù |
+| **Dario** | l'**avversario** 🏃 che ti ruba palla (ruota con gli altri avversari) |
+
+Le foto nuove si aggiungono come **sticker** da *Le mie foto*; per gli avversari basta
+generare l'asset e la rotazione parte da sola.
+
 ## 🎮 Come si gioca
 
 | Azione | Comando |
@@ -17,6 +30,7 @@ e da desktop.
 
 - 🏃 **Avversari** e 🔶 **coni**: ostacoli a terra.
 - ⚽ **Palloni**: arrivano anche in alto.
+- 🧤 **Marco il portiere**: esce dai pali e para in tuffo — dagli il tempo giusto.
 - 🎩 **Outfit**: +25 punti e **+1 ENERGIA**. L'energia si accumula e non si consuma da sola.
 - 🪩 **BALLA MODE**: a energia piena Luciano balla e respinge tutto. Ogni respinta consuma
   1 di energia.
@@ -48,11 +62,21 @@ Se la foto ha lo sfondo pieno, usa **✂️ Ripulisci sfondo**:
 ## 📁 Struttura
 
 ```
-index.html              gioco completo (HTML + CSS + JS, nessuna dipendenza)
-assets/player.png       Luciano  (foto ottimizzata, sfondo trasparente)
-assets/coach.png        Claudio  (foto ottimizzata, sfondo trasparente)
-LucianoBallerino.png    foto originale di Luciano
-Claudio.png             foto originale di Claudio
+index.html                        gioco completo (HTML + CSS + JS, nessuna dipendenza)
+gioco.html                        versione tutto-in-uno (foto come data URI)
+og-image.png                      anteprima social 1200x630
+assets/player.png                 Luciano versione Ballerino
+assets/player_playboy.png         Luciano versione Playboy
+assets/coach.png                  Claudio / Vater
+assets/referee.png                Vater versione arbitro
+assets/keeper.png                 Marco il portiere
+assets/rival_dario.png            Dario, avversario
+LucianoOK.png                     foto originali (sorgente)
+LucianoPlayboy.png
+Claudio.png
+ClaudioArbitroMinchione.png
+MarcoPortiere.png
+AvversarioDario.png
 ```
 
 Le foto originali restano come sorgente; in `assets/` ci sono le versioni ottimizzate
@@ -65,15 +89,23 @@ e sfidatevi.
 
 ## 🚀 Giocare online
 
-**Link pronto all'uso (nessuna configurazione):**
+**Link ufficiale da condividere:**
+
+👉 **https://ecopraf.github.io/TerzinoBallerino/**
+
+È servito da **GitHub Pages** e si aggiorna da solo ad ogni push su `main` (entro ~1 minuto).
+
+Incollando il link in chat appare l'**anteprima social** con titolo e immagine (`og-image.png`).
+
+**Versione tutto-in-uno** (`gioco.html`): le foto sono incorporate come data URI, quindi è
+un solo file senza dipendenze esterne — comodo da mandare come file singolo:
 
 👉 https://htmlpreview.github.io/?https://raw.githubusercontent.com/ecopraf/TerzinoBallerino/main/gioco.html
 
-`gioco.html` è la versione **tutto-in-uno**: le foto sono incorporate come data URI, quindi
-è un solo file e non dipende da altri file del repository. Ottimo da mandare agli amici.
-
-**GitHub Pages** (link stabile `https://ecopraf.github.io/TerzinoBallerino/`):
-il workflow `pages.yml` è già pronto, ma va abilitato una volta a mano in
-**Settings → Pages → Source: GitHub Actions**. Da lì in poi si aggiorna da solo ad ogni push.
-
 **In locale:** apri `index.html` (o `gioco.html`) con doppio clic, nessun server necessario.
+
+## 📤 Sfida l'amico
+
+Dopo una partita premi **📤 Sfida l'amico**: il gioco prepara un messaggio con il tuo
+punteggio e il link, e lo **copia negli appunti** (o apre il menu di condivisione nativo
+sul telefono). Incollalo in chat e la sfida è lanciata.
