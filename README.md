@@ -16,10 +16,12 @@ e da desktop.
 | **Claudio** | la persona reale; in campo è il **Vater**, che entra e bacchetta |
 | **Vater arbitro** | ogni tanto Claudio entra con il **completo da arbitro** 🟨 |
 | **Marco** | il **portiere** 🧤: esce dai pali e para in tuffo, muovendosi su e giù |
-| **Dario** | l'**avversario** 🏃 che ti ruba palla (ruota con gli altri avversari) |
+| **Gli avversari** | 19 rivali 🏃 che ti rubano palla (Dario, Silvio, AnneX, John…) e ruotano da soli |
+| **BonusAnnex** | il **bonus** 🎁 che *regala* energia: +2 (o 120 punti a barra piena) |
 
 Le foto nuove si aggiungono come **sticker** da *Le mie foto*; per gli avversari basta
-generare l'asset e la rotazione parte da sola.
+generare l'asset `assets/rival_<nome>.png`, aggiungere la riga in `MEDIA` e la rotazione
+parte da sola.
 
 ## 🎮 Come si gioca
 
@@ -32,6 +34,11 @@ generare l'asset e la rotazione parte da sola.
 - ⚽ **Palloni**: arrivano anche in alto.
 - 🧤 **Marco il portiere**: esce dai pali e para in tuffo — dagli il tempo giusto.
 - 🎩 **Outfit**: +25 punti e **+1 ENERGIA**. L'energia si accumula e non si consuma da sola.
+- 🎁 **BonusAnnex**: bonus raro che compare in alto e **regala +2 ENERGIA** (o 120 punti a
+  barra piena). Non si schiva: si prende.
+- 💥 **La barra è la tua vita**: ogni colpo toglie **1 ENERGIA**, poi hai un attimo di
+  invulnerabilità. Si va avanti finché la barra è carica: a **zero** il prossimo colpo è
+  fatale. Puoi sbagliare, ma non troppo.
 - 🪩 **BALLA MODE**: a energia piena Luciano balla e respinge tutto. Ogni respinta consuma
   1 di energia.
 - 🧓 **Vater**: tre bacchettate e sei richiamato in panchina.
@@ -70,14 +77,23 @@ assets/player_playboy.png         Luciano versione Playboy
 assets/coach.png                  Claudio / Vater
 assets/referee.png                Vater versione arbitro
 assets/keeper.png                 Marco il portiere
-assets/rival_dario.png            Dario, avversario
+assets/rival_dario.png            Dario, avversario (uno dei 19 rivali)
+assets/rival_silvio.png           Silvio, avversario
+assets/rival_*.png                gli altri avversari (Ago, Angelo, AnneX, …)
+assets/bonus_annex.png            BonusAnnex, il bonus che regala energia
 LucianoOK.png                     foto originali (sorgente)
 LucianoPlayboy.png
 Claudio.png
 ClaudioArbitroMinchione.png
 MarcoPortiere.png
 AvversarioDario.png
+AvversarioSilvio.png
+AvversarioAnneX.png
+BonusAnnex.png
 ```
+
+Il file **`gioco.html`** è la versione **tutto-in-uno** (immagini incorporate): si
+rigenera con `python3 build_gioco.py` dopo ogni modifica a `index.html` o agli asset.
 
 Le foto originali restano come sorgente; in `assets/` ci sono le versioni ottimizzate
 (ritagliate al contenuto e ridimensionate) usate dal gioco.

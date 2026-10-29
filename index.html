@@ -25,10 +25,13 @@
   #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
   canvas{display:block;touch-action:none;}
 
-  .screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:20px;gap:12px;overflow-y:auto;z-index:10;
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:flex-start;
+    text-align:center;padding:16px;gap:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:10;
     background:radial-gradient(circle at 50% 0%, #1b7a3d 0%, #0b3a1c 60%, #06170c 100%);}
   .screen.on{display:flex;}
+  /* Schermi bassi (telefono): centra se c'e' spazio, altrimenti scorri dall'alto.
+     Con 'safe center' il contenuto non finisce mai sopra il bordo visibile. */
+  @supports (justify-content: safe center){ .screen{justify-content: safe center;} }
 
   h1{font-size:clamp(28px,8.5vw,60px);margin:0;line-height:.95;letter-spacing:-1px;text-transform:uppercase;font-weight:900;
      background:linear-gradient(180deg,#fff 0%, var(--sun) 55%, var(--pink) 100%);
@@ -48,7 +51,7 @@
   .card{background:rgba(0,0,0,.35);border:2px dashed rgba(255,255,255,.25);border-radius:18px;
     padding:14px 18px;max-width:560px;width:100%;text-align:left;font-size:clamp(12px,3.4vw,15px);line-height:1.6}
   .k{display:inline-block;background:#fff;color:#06170c;font-weight:800;border-radius:8px;padding:1px 8px;margin:0 2px}
-  .sticker{width:clamp(78px,22vw,124px);height:clamp(96px,27vw,152px);border-radius:18px;display:grid;place-items:center;
+  .sticker{width:clamp(78px,22vw,124px);height:clamp(96px,27vw,152px);flex:none;border-radius:18px;display:grid;place-items:center;
     font-size:clamp(40px,13vw,68px);overflow:hidden;background:radial-gradient(circle at 35% 30%, #fff, #d8e6dc);
     box-shadow:0 10px 30px rgba(0,0,0,.5), inset 0 0 0 6px var(--lime);animation:boing 1.6s ease-in-out infinite;padding:6px}
   .sticker img{width:100%;height:100%;object-fit:contain;border-radius:16px}
@@ -145,7 +148,7 @@
     <button class="btn alt sm" id="btnVarBallerino">🕺 Versione Ballerino</button>
     <button class="btn alt sm" id="btnVarPlayboy">😎 Versione Playboy</button>
   </div>
-  <div class="sub">Aiuta <b>Luciano</b>: schiva palloni e avversari, raccogli gli <b>outfit improbabili</b> per caricare l'<b>ENERGIA</b>. A barra piena entra in <b>BALLA MODE</b> e respinge tutto ballando. Occhio al <b>Vater</b>: entra Claudio e bacchetta.</div>
+  <div class="sub">Aiuta <b>Luciano</b>: schiva palloni e avversari, raccogli gli <b>outfit improbabili</b> per caricare l'<b>ENERGIA</b>. A barra piena entra in <b>BALLA MODE</b> e respinge tutto ballando. Ogni ostacolo ti costa <b>1 di energia</b>: puoi sbagliare finché la barra è carica, a zero sei fuori. Occhio al <b>Vater</b>: entra Claudio e bacchetta.</div>
   <button class="btn" id="btnPlay">▶ Gioca</button>
   <div class="best">Record: <span id="bestStart">0</span> &nbsp;·&nbsp; <span id="bestDistStart">0 m</span></div>
   <div class="row">
@@ -251,6 +254,8 @@
     <p>🏃 <b>Avversari</b> e 🔶 <b>coni</b>: a terra. ⚽ <b>Palloni</b>: arrivano anche in alto. 🧤 <b>Marco il portiere</b>: esce dai pali e para in tuffo, dagli il tempo giusto.</p>
     <p>🕺 <b>Due versioni di Luciano</b>: dal menu scegli <b>Ballerino</b> o <b>Playboy</b>.</p>
     <p>🎩 <b>Outfit</b>: +25 punti e <b>+1 ENERGIA</b>. L'energia si accumula e resta lì: non si consuma da sola.</p>
+    <p>🎁 <b>Bonus Annex</b>: ogni tanto compare in alto un bonus speciale. Non si schiva: <b>prendilo</b>! Regala <b>+2 energia</b> (o 120 punti se la barra è già piena).</p>
+    <p>💥 <b>La barra è anche la tua vita</b>: se ti prendono un pallone, un cono o un avversario perdi <b>1 di energia</b> e resti in gioco con un attimo di invulnerabilità. Si va avanti <b>finché la barra ha energia</b>: a <b>zero</b> il prossimo colpo è fatale. Puoi sbagliare, ma non troppo.</p>
     <p>🪩 <b>ENERGIA al massimo</b> → <b>BALLA MODE</b>: Luciano balla e <b>respinge tutto</b> (avversari, palloni, coni) rimandandoli indietro. Ogni respinta consuma 1 di energia: più outfit prendi, più a lungo balli.</p>
     <p>🧓 <b>Vater</b>: entra <b>Claudio</b>, il moralista del pallone. Convinto di «disegnare calcio» pur non muovendosi mai dal cerchio di centrocampo. Si pianta lì e bacchetta chi passa: <b>saltalo</b>. Tre bacchettate = richiamato in panchina. In BALLA MODE lo respingi anche lui.</p>
     <p>🧓 <b>Lezione del Vater</b> (dal menu): mini-gioco di riflessi — schiva la bacchetta spostandoti e saltando, mentre Claudio ti insulta in base ai tuoi punti.</p>
@@ -286,15 +291,34 @@ const MEDIA = {
   player:  { src:'assets/player.png',          emoji:'🕺', img:null },
   player2: { src:'assets/player_playboy.png',  emoji:'😎', img:null },
   ball:    { src:'assets/ball.png',            emoji:'⚽', img:null },
-  rival:   { src:'assets/rival.png',           emoji:'🏃', img:null },
-  rival2:  { src:'assets/rival_dario.png',     emoji:'🏃', img:null },
+  rival:   { src:'',                           emoji:'🏃', img:null },  /* slot override: se carichi una foto qui, vale per tutti gli avversari */
   keeper:  { src:'assets/keeper.png',          emoji:'🧤', img:null },
   coach:   { src:'assets/coach.png',           emoji:'🧓', img:null },
   referee: { src:'assets/referee.png',         emoji:'🟨', img:null },
   item:    { src:'assets/item.png',            emoji:'🎩', img:null },
+  annex:   { src:'assets/bonus_annex.png',     emoji:'🎁', img:null },  /* bonus speciale: regala energia invece di toglierla */
   logo:    { src:'assets/logo.png',            emoji:'🪩', img:null },
+  rival_ago:       { src:'assets/rival_ago.png', img:null },
+  rival_angelo:    { src:'assets/rival_angelo.png', img:null },
+  rival_annex:     { src:'assets/rival_annex.png', img:null },
+  rival_claudione: { src:'assets/rival_claudione.png', img:null },
+  rival_cori:      { src:'assets/rival_cori.png', img:null },
+  rival_daniele:   { src:'assets/rival_daniele.png', img:null },
+  rival_dario:     { src:'assets/rival_dario.png', img:null },
+  rival_gae:       { src:'assets/rival_gae.png', img:null },
+  rival_john:      { src:'assets/rival_john.png', img:null },
+  rival_luca:      { src:'assets/rival_luca.png', img:null },
+  rival_luciano:   { src:'assets/rival_luciano.png', img:null },
+  rival_ludo:      { src:'assets/rival_ludo.png', img:null },
+  rival_marino:    { src:'assets/rival_marino.png', img:null },
+  rival_nonny:     { src:'assets/rival_nonny.png', img:null },
+  rival_pietro:    { src:'assets/rival_pietro.png', img:null },
+  rival_raffaele:  { src:'assets/rival_raffaele.png', img:null },
+  rival_sarra:     { src:'assets/rival_sarra.png', img:null },
+  rival_silvio:    { src:'assets/rival_silvio.png', img:null },
+  rival_speranzini: { src:'assets/rival_speranzini.png', img:null },
 };
-function loadImg(m, src, cb){ const im=new Image(); im.onload=()=>{ m.img=im; if(cb) cb(); }; im.onerror=()=>{}; im.src=src; }
+function loadImg(m, src, cb){ if(!src) return; const im=new Image(); im.onload=()=>{ m.img=im; if(cb) cb(); }; im.onerror=()=>{}; im.src=src; }
 function saveSticker(k, src){
   const saved = JSON.parse(localStorage.getItem('tb_stickers')||'{}');
   saved[k]=src;
@@ -409,22 +433,23 @@ function resize(){
 
 /* ---------- game state ---------- */
 const ENERGY_MAX=6;
+const ENERGY_START=3;   /* vita di partenza: si puo' sbagliare finche' la barra e' carica */
 const G = {
   state:'menu', t:0, speed:0, score:0, dist:0, coins:0,
   best: +(localStorage.getItem('tb_best')||0),
   bestDist: +(localStorage.getItem('tb_bestDist')||0),
   energy:0, balla:false, ballaUsed:0, bounceFlash:0,
   invuln:0, shake:0, flash:0, hitFlash:0, coachHits:0,
-  spawn:0, spawnGap:1.2, itemTimer:0, coachTimer:8, vaterSpeech:0,
+  spawn:0, spawnGap:1.2, itemTimer:0, annexTimer:0, coachTimer:8, vaterSpeech:0, lastRival:'',
 };
 const player = { x:120, y:0, vy:0, onGround:true, jumps:0, run:0, lean:0, dance:0, dead:false };
 let obstacles=[], items=[], particles=[], floats=[], coach=null, coachQuip='';
 const MAXJUMPS=2, GRAV=2600, JUMPV=-900;
 
 function reset(){
-  G.t=0; G.speed=360; G.score=0; G.dist=0; G.coins=0; G.energy=0; G.balla=false; G.ballaUsed=0; G.bounceFlash=0;
+  G.t=0; G.speed=360; G.score=0; G.dist=0; G.coins=0; G.energy=ENERGY_START; G.balla=false; G.ballaUsed=0; G.bounceFlash=0; G.lastRival='';
   G.invuln=1.2; G.shake=0; G.flash=0; G.hitFlash=0; G.coachHits=0;
-  G.spawn=0.9; G.spawnGap=1.2; G.itemTimer=2.4; G.coachTimer=8; G.vaterSpeech=0;
+  G.spawn=0.9; G.spawnGap=1.2; G.itemTimer=2.4; G.annexTimer=9; G.coachTimer=8; G.vaterSpeech=0;
   player.y=groundY; player.vy=0; player.onGround=true; player.jumps=0; player.run=0; player.lean=0; player.dance=0; player.dead=false;
   obstacles=[]; items=[]; particles=[]; floats=[]; coach=null; coachQuip='';
 }
@@ -460,19 +485,31 @@ function spawnObstacle(){
   } else if(Math.random()<0.5){
     obstacles.push({ type:'cone', x:W+40, y:groundY-26, w:34, h:26, repelled:false });
   } else {
-    const keys=rivalKeys();
-    const h=rand(46,62);
-    obstacles.push({ type:'rival', key: keys.length?pick(keys):'rival',
-      x:W+40, y:groundY-h, w:rand(34,42), h, bob:rand(0,TAU), repelled:false });
+    const h=rand(78,98);
+    obstacles.push({ type:'rival', key:pickRivalKey(),
+      x:W+40, y:groundY-h, w:rand(40,50), h, bob:rand(0,TAU), repelled:false });
   }
-  // Marco, il portiere: ogni tanto esce dai pali e para in tuffo
+  // Marco, il portiere: ogni tanto esce dai pali e para in tuffo (largo e basso)
   if(G.t>12 && MEDIA.keeper.img && Math.random()<0.10){
-    const h=rand(52,64);
-    obstacles.push({ type:'keeper', x:W+40, y:groundY-h, w:46, h, bob:rand(0,TAU), repelled:false });
+    const w=rand(66,84), h=Math.round(w*0.5);
+    obstacles.push({ type:'keeper', x:W+40, y:groundY-h, w, h, bob:rand(0,TAU), repelled:false });
   }
 }
-function rivalKeys(){ return ['rival','rival2'].filter(k=>MEDIA[k]&&MEDIA[k].img); }
-function spawnItem(){ items.push({ x:W+40, y:groundY-rand(60,180), r:18, e:pick(OUTFITS), bob:rand(0,TAU) }); }
+function rivalKeys(){ return Object.keys(MEDIA).filter(k=>k.indexOf('rival_')===0 && MEDIA[k].img); }
+function pickRivalKey(){
+  if(MEDIA.rival && MEDIA.rival.img) return 'rival';   /* foto caricata dall'utente: vale per tutti */
+  const ks=rivalKeys();
+  if(!ks.length) return 'rival';
+  const pool=ks.length>1?ks.filter(k=>k!==G.lastRival):ks;
+  const k=pick(pool); G.lastRival=k; return k;
+}
+function spawnItem(){ items.push({ x:W+40, y:groundY-rand(60,180), r:18, e:pick(OUTFITS), bob:rand(0,TAU), annex:false }); }
+/* Bonus Annex: raro, regala energia invece di toglierla. Sta in alto,
+   dove non ci sono ostacoli a terra, cosi non e' un premio "gratis". */
+function spawnAnnex(){
+  const r=Math.min(30, Math.max(24, W*0.045));
+  items.push({ x:W+40, y:groundY-rand(120,200), r, e:'🎁', bob:rand(0,TAU), annex:true });
+}
 
 /* ---------- Vater (Claudio, il moralista che bacchetta) ---------- */
 /* Il Vater cambia tono in base a quanto sta andando bene Luciano. */
@@ -589,6 +626,8 @@ function update(dt){
   if(G.spawn<=0){ spawnObstacle(); G.spawn = clamp(1.05 - G.t*0.006, 0.42, 1.05) * rand(0.85,1.25); }
   G.itemTimer -= dt;
   if(G.itemTimer<=0){ spawnItem(); G.itemTimer = rand(1.6,3.2); }
+  G.annexTimer -= dt;
+  if(G.annexTimer<=0){ spawnAnnex(); G.annexTimer = rand(16,28); }   /* raro: ogni 16-28s */
   if(!coach){ G.coachTimer -= dt; if(G.coachTimer<=0){ spawnCoach(); G.coachTimer = rand(11,17); } }
 
   for(const o of obstacles){
@@ -600,10 +639,10 @@ function update(dt){
     o.x -= scroll;
     if(o.type==='ball') o.spin += dt*8;
     if(o.type==='rival') o.bob += dt*12;
-    if(o.type==='keeper'){ o.bob += dt*3.4; o.y = groundY-o.h-(Math.sin(o.bob)*0.5+0.5)*46; }
+    if(o.type==='keeper'){ o.bob += dt*3.4; o.y = groundY-o.h-(Math.sin(o.bob)*0.5+0.5)*44; }
     if(collidePlayer(o)){
       if(G.balla){ repelObstacle(o); }
-      else if(G.invuln<=0){ gameOver(); return; }
+      else if(G.invuln<=0){ takeHit(o); if(G.state!=='play') return; }
     }
   }
   obstacles = obstacles.filter(o=>o.x > -80 && o.x < W+240);
@@ -611,10 +650,20 @@ function update(dt){
   for(const it of items){
     it.x -= scroll; it.bob += dt*6;
     if(Math.hypot(it.x-player.x, it.y-(player.y-26)) < it.r+22){
-      it.dead=true; G.coins++; G.score+=25;
-      if(!G.balla) G.energy = Math.min(ENERGY_MAX, G.energy+1);
-      sfx.coin(); spawnSparkle(it.x,it.y,12);
-      floats.push({x:it.x,y:it.y,txt:'+25  ⚡'+G.energy+'/'+ENERGY_MAX,life:.9,max:.9,c:'#ffd400'});
+      it.dead=true; G.coins++;
+      const full = (G.energy>=ENERGY_MAX);
+      const gain = it.annex ? 2 : 1;
+      if(!it.annex && G.balla) G.energy = Math.min(ENERGY_MAX, G.energy+1);
+      else if(full) G.score += 120;                    /* barra piena: l'energia diventa punti */
+      else G.energy = Math.min(ENERGY_MAX, G.energy+gain);
+      G.score += it.annex ? 60 : 25;
+      if(it.annex){ sfx.disco(); spawnSparkle(it.x,it.y,20,['#ffd400','#ff2d95','#fff']);
+        toast('🎁 BONUS ANNEX! Energia '+G.energy+'/'+ENERGY_MAX);
+        floats.push({x:it.x,y:it.y,txt:'+'+gain+' ENERGIA',life:1.1,max:1.1,c:'#c6ff00'});
+      } else {
+        sfx.coin(); spawnSparkle(it.x,it.y,12);
+        floats.push({x:it.x,y:it.y,txt: full?'+120 PUNTI':'+25  ⚡'+G.energy+'/'+ENERGY_MAX, life:.9,max:.9,c:'#ffd400'});
+      }
       if(!G.balla && G.energy>=ENERGY_MAX) startBalla();
     }
   }
@@ -630,6 +679,24 @@ function update(dt){
   if(G.flash>0) G.flash=Math.max(0,G.flash-dt*1.5);
   if(G.hitFlash>0) G.hitFlash=Math.max(0,G.hitFlash-dt*1.5);
   updateParticles(dt);
+}
+/* Un ostacolo NON uccide subito: costa 1 di ENERGIA e lascia un attimo di
+   invulnerabilita'. Si resta in gioco finche' la barra ha energia. */
+function takeHit(o){
+  if(G.state!=='play' || G.invuln>0) return;
+  G.energy--;
+  G.invuln=1.3; G.shake=1; G.hitFlash=0.4; G.flash=0.25;
+  sfx.hit();
+  const cy=(o.type==='ball')?o.y:(o.y+(o.type==='keeper'?o.h:o.h*0.5));
+  spawnSparkle(player.x, player.y-40, 14, ['#fff','#ffd400','#ff2d95']);
+  spawnSparkle(o.x, cy, 10, ['#ff2d95','#fff']);
+  if(G.energy>0){
+    floats.push({x:player.x, y:player.y-74, txt:'-1 ENERGIA', life:1, max:1, c:'#ff2d95'});
+    toast('💥 Colpito! Energia '+G.energy+'/'+ENERGY_MAX);
+  } else {
+    floats.push({x:player.x, y:player.y-74, txt:'ENERGIA A ZERO!', life:1, max:1, c:'#ff2d95'});
+    gameOver();
+  }
 }
 function repelObstacle(o){
   o.repelled = true; o.rvx = 700 + rand(0,220);
@@ -659,6 +726,18 @@ function roundRect(x,y,w,h,r){ ctx.beginPath();
   ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
   ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 
+/* figura con ALTEZZA fissa (i piedi restano a feetY): cosi' tutti gli
+   avversari hanno la stessa taglia a schermo, qualunque sia la loro foto. */
+function drawStickerH(m, cx, feetY, targetH, rot=0){
+  if(!m || !m.img) return;
+  const iw=m.img.naturalWidth||targetH, ih=m.img.naturalHeight||targetH;
+  const dw=iw*(targetH/ih);
+  ctx.save(); ctx.translate(cx,feetY); ctx.rotate(rot);
+  ctx.save();
+  ctx.shadowColor='rgba(0,0,0,.38)'; ctx.shadowBlur=targetH*0.12; ctx.shadowOffsetY=targetH*0.06;
+  ctx.drawImage(m.img,-dw/2,-targetH,dw,targetH);
+  ctx.restore(); ctx.restore();
+}
 function drawSticker(m, cx, cy, size, rot=0, round=true){
   ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot);
   const h=size/2;
@@ -747,11 +826,13 @@ function drawObstacles(){
       ctx.fillStyle='#c94f00'; ctx.fillRect(-o.w/2-3,o.h,o.w+6,4);
       ctx.restore();
     } else if(o.type==='keeper'){
-      drawSticker(MEDIA.keeper, o.x, o.y+o.h/2, o.h*1.35, 0, false);
+      drawSticker(MEDIA.keeper, o.x, o.y+o.h/2, o.w*1.15, 0, false);
     } else {
       const bob=Math.sin(o.bob)*3;
-      const m=MEDIA[o.key]||MEDIA.rival;
-      drawSticker(m, o.x, o.y+o.h/2+bob, o.h*1.15, 0, false);
+      const m=(MEDIA[o.key]&&MEDIA[o.key].img)?MEDIA[o.key]:((MEDIA.rival&&MEDIA.rival.img)?MEDIA.rival:null);
+      if(m) drawStickerH(m, o.x, o.y+o.h+bob, o.h*1.1, 0);
+      else { ctx.font='42px serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+             ctx.fillText('🏃', o.x, o.y+o.h+bob); }
     }
     if(o.repelled){ ctx.save(); ctx.globalAlpha=.5; ctx.fillStyle='#00e5ff';
       ctx.font='900 14px system-ui'; ctx.textAlign='center'; ctx.fillText('↩', o.x, (o.type==='ball'?o.y:o.y-8)); ctx.restore(); }
@@ -784,12 +865,15 @@ function drawItems(){
   for(const it of items){
     const y=it.y+Math.sin(it.bob)*6;
     ctx.save();
-    const rg=ctx.createRadialGradient(it.x,y,2,it.x,y,34);
-    rg.addColorStop(0,'rgba(255,212,0,.55)'); rg.addColorStop(1,'rgba(255,212,0,0)');
+    const rr = it.annex?46:34;
+    const rg=ctx.createRadialGradient(it.x,y,2,it.x,y,rr);
+    rg.addColorStop(0, it.annex?'rgba(198,255,0,.7)':'rgba(255,212,0,.55)');
+    rg.addColorStop(1,'rgba(255,212,0,0)');
     ctx.fillStyle=rg; ctx.beginPath(); ctx.arc(it.x,y,34,0,TAU); ctx.fill();
     ctx.restore();
-    if(MEDIA.item.img) drawSticker(MEDIA.item, it.x, y, it.r*2.2, Math.sin(it.bob)*0.2, true);
-    else { ctx.font='30px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(it.e, it.x, y); }
+    const m = it.annex ? MEDIA.annex : MEDIA.item;
+    if(m && m.img) drawSticker(m, it.x, y, it.r*2.2, Math.sin(it.bob)*0.2, true);
+    else { ctx.font=(it.annex?34:30)+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(it.e, it.x, y); }
   }
 }
 function drawPlayer(){
@@ -850,8 +934,15 @@ function drawHUD(){
   ctx.fillStyle=grad; roundRect(bx,by,Math.max(bh,bw*pct),bh,bh/2); ctx.fill();
   if(G.balla){ ctx.save(); ctx.globalAlpha=.4+0.4*Math.sin(G.t*10);
     ctx.strokeStyle='#00e5ff'; ctx.lineWidth=3; roundRect(bx-3,by-3,bw+6,bh+6,(bh+6)/2); ctx.stroke(); ctx.restore(); }
-  ctx.textAlign='right'; ctx.fillStyle='#fff'; ctx.font='900 13px system-ui';
-  ctx.fillText(G.balla?('BALLA MODE ⚡'+G.energy):('ENERGIA '+G.energy+'/'+ENERGY_MAX), bx+bw-8, by-18);
+  const low = (G.energy<=1 && !G.balla);
+  if(low){ ctx.save(); ctx.globalAlpha=.5+0.5*Math.sin(G.t*12);
+    ctx.strokeStyle='#ff2d95'; ctx.lineWidth=4; roundRect(bx-4,by-4,bw+8,bh+8,(bh+8)/2); ctx.stroke(); ctx.restore(); }
+  ctx.textAlign='right'; ctx.font='900 13px system-ui';
+  ctx.fillStyle = low?'#ff2d95':'#fff';
+  const lab = G.balla ? ('BALLA MODE ⚡'+G.energy+'/'+ENERGY_MAX)
+            : (low ? ('⚠ ENERGIA '+G.energy+'/'+ENERGY_MAX+' — ULTIMA!')
+                   : ('ENERGIA '+G.energy+'/'+ENERGY_MAX));
+  ctx.fillText(lab, bx+bw-8, by-18);
 }
 
 /* ---------- loop ---------- */
@@ -888,8 +979,7 @@ function gameOver(){
 const SLOT_DEFS=[
   {k:'player',label:'Protagonista — Luciano',hint:'di solito arriva dal profilo condiviso'},
   {k:'player2',label:'Luciano — versione Playboy',hint:'la seconda divisa di Luciano'},
-  {k:'rival', label:'Avversari',hint:'chi gli ruba palla'},
-  {k:'rival2',label:'Avversario — Dario',hint:'ruota con gli altri avversari'},
+  {k:'rival', label:'Avversari (rotazione)',hint:'ruotano da soli tra tutti gli avversari caricati'},
   {k:'keeper',label:'Portiere — Marco',hint:'esce dai pali e para in tuffo'},
   {k:'coach', label:'Vater — Claudio',hint:'il moralista che bacchetta'},
   {k:'referee',label:'Vater — versione arbitro',hint:'entra con il completo da arbitro'},

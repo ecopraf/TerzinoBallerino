@@ -14,9 +14,17 @@ come file singolo. **Va rigenerato ogni volta che si tocca `index.html` o gli as
   Variante casuale (~40%): **versione arbitro** → `assets/referee.png`.
 - **Marco** — il portiere → `assets/keeper.png`. Ostacolo che **oscilla in verticale**
   (tipo "tuffo"), esce dai pali dopo i 12 s di gioco.
-- **Dario** — primo avversario → `assets/rival_dario.png`. Ruota con `assets/rival.png`
-  tramite `rivalKeys()`: **quando arrivano nuove foto basta generarne gli asset e
-  aggiungere la chiave a `MEDIA` + `rivalKeys()`**, ruotano da sole.
+- **Dario** — primo avversario → `assets/rival_dario.png`.
+- **Gli avversari** — tutte le foto `Avversario*.png` → `assets/rival_*.png`.
+  Ruotano da sole tramite `rivalKeys()` (legge automaticamente tutte le chiavi
+  `MEDIA` che iniziano con `rival_`): **quando arrivano nuove foto basta generarne
+  l'asset `assets/rival_<nome>.png` e aggiungere la riga in `MEDIA`**, nessun altro
+  intervento. Attualmente **19 avversari** (Ago, Angelo, AnneX, Claudione, Cori,
+  Daniele, Dario, Gae, John, Luca, Luciano, Ludo, Marino, Nonny, Pietro, Raffaele,
+  Sarra, Silvio, Speranzini). Disegnati a **44×88** px contro un protagonista
+  ~60×90: proporzioni volutamente simili, non farli rimpicciolire.
+- **BonusAnnex** → `assets/bonus_annex.png`. **Non è un avversario**: è un bonus
+  che *regala* energia. Vedi "Bonus Annex" qui sotto.
 
 ## Asset
 Le foto originali nel repo sono il sorgente; `assets/` contiene le versioni ottimizzate
@@ -28,6 +36,21 @@ Richiede `pillow` e `numpy`.
 Per le immagini **composte** (es. `ClaudioArbitroMinchione.png` e `MarcoPortiere.png`
 contengono una figura grande + una piccola, il "minchione"): si prende solo la
 **componente connessa più grande** (`main_bbox`), scartando il resto.
+
+## Modello di danno: **l'energia è la vita**
+Un colpo non uccide più: `takeHit(o)` toglie **1 di energia** e dà un attimo di
+invulnerabilità (`G.invuln`). Si va avanti **finché la barra ha energia**; a zero il
+prossimo colpo è fatale. Le bacchettate del Vater si contano a parte in `G.coachHits`
+(tre = richiamato). Non reintrodurre la morte istantanea al primo urto.
+
+## Bonus Annex
+`BonusAnnex.png` → `assets/bonus_annex.png`, registrato in `MEDIA.annex`. Non è un
+avversario: è un **bonus che regala energia**. Spawna raro (`G.annexTimer`, ogni 16–28 s)
+**in alto** (`groundY-120..200`), dove non arrivano gli ostacoli di terra, così prenderlo
+è una scelta e non un premio gratis. Alla raccolta (in `update()`, blocco `items`):
+- **+2 energia** (o **+120 punti** se la barra è già piena, per non sprecarla);
+- funziona **anche in BALLA MODE** (a differenza degli outfit, che lì non ricaricano);
+- non fa mai danno. `it.annex` distingue bonus speciale e outfit normale.
 
 ## Rendering (`drawSticker`)
 - `round=true` → clip circolare + bordo bianco (palloni, bonus).
@@ -48,12 +71,35 @@ contengono una figura grande + una piccola, il "minchione"): si prende solo la
 - Il portiere ha `o.y` **animato in `update()`** (non solo disegnato): la collisione usa
   `o.y` corrente, quindi anche l'hitbox segue il tuffo.
 
+## Menu e schermi piccoli (mobile)
+Gli schermi `.screen` sono colonne flex con `overflow-y:auto`. **Non** usare
+`justify-content:center` da solo su un contenitore che scorre: su schermi bassi il
+contenuto in alto finisce *sopra* il bordo visibile e non è più raggiungibile (bug
+"riquadro personaggio tagliato"). Soluzione adottata: `justify-content:flex-start` come
+base + `@supports { justify-content: safe center }` per centrare solo quando c'è spazio.
+Gli `.sticker` hanno `flex:none`, altrimenti la colonna flex li schiaccia a pochi pixel.
+Regola generale: **se aggiungi contenuto in alto al menu, verifica a 320×480.**
+
 ## Test
-Harness in `/tmp`: `runner.js` + `game_testA.js` (17 test), `edtest.js` (editor),
-`harness3.js` + `t_new.js` (25 test su varianti/avversari/portiere/arbitro/share).
+Harness in `/tmp`: `runner.js` + `game_testA.js` (17 test), `edtest.js` (editor +
+minigioco), `harness3.js` + `t_new.js` (26 test su varianti/avversari/portiere/arbitro/share),
+`harness3.js` + `t_dmg.js` (modello di danno, Bonus Annex, rotazione avversari).
 Estrarre lo script da `index.html` e lanciare `node --check` per la sintassi.
 Gli harness mockano il DOM: se si aggiungono elementi con `id`, **vanno aggiunti alla
-lista `IDS`** degli harness, altrimenti `$(id).onclick` esplode.
+lista `IDS`** degli harness, altrimenti `$(id).onclick` esplode. La lista `IDS` si può
+rigenerare con: `id="..."` + `$('...')` estratti da `index.html`.
+
+### Rigenerare gli hook di test
+Gli harness caricano `game_hooks.js`: copia dello script con, **subito prima della
+chiusura della IIFE** (`s.rfind('})();')`), l'oggetto `globalThis.__test={...}`.
+Se i test falliscono con `T.<qualcosa> is not a function`, quasi sempre manca quella
+voce nell'elenco degli hook — non è un bug del gioco.
+
+## Build del file unico
+`python3 build_gioco.py` genera `gioco.html` incorporando **tutti** gli `assets/*.png`
+citati in `index.html` come data URI. Non serve altro: aggiunge da sé le nuove immagini.
+Se un asset citato non esiste, lo segnala e lascia il percorso (il gioco usa l'emoji di
+fallback). `ball/item/logo` sono citati ma **non esistono di proposito** (emoji).
 
 ## Pubblicazione
 GitHub Pages è **ATTIVO** sul repo `ecopraf/TerzinoBallerino`:
