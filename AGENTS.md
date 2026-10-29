@@ -77,6 +77,15 @@ avversario: è un **bonus che regala energia**. Spawna raro (`G.annexTimer`, ogn
   `healBuiltinPlayerStickers()` ripulisce i profili gia' salvati in quello stato.
 - Il minigioco usa nodi DOM (`#mgPlayer`, `#mgVater`): `mgPaintFaces()` inietta le foto
   all'apertura e rispetta la variante arbitro (`MG.ref`). CSS `object-fit:contain`.
+- **Minigioco: il Vater si muove.** `MG.vpos` (corsia del Vater) insegue `MG.vtarget` a
+  passi di 0.16 s; `mgPlaceVater()` muove Vater, bastone, cerchio (`#mgRing`) e corsia
+  (`#mgLane`) insieme, così l'hitbox coincide sempre con quello che si vede. Il colpo
+  (`mgResolve`) prende **solo** se `MG.vpos===MG.pos` e non si sta saltando. Il Vater
+  sceglie la prossima corsia con `mgChooseVaterLane()` (più segue il giocatore col salire
+  del livello) e `MG.cool` include `passi*0.16` per dargli il tempo di arrivare: il colpo
+  resta sempre schivabile. Non farlo muovere *durante* l'attacco: diventa ingiocabile.
+- Frasi del Vater: `SCORE_TIERS` (per punteggio) + `VATER_TAUNTS` via `vaterTaunt()`,
+  ripetute ogni `MG.quip` secondi e a ogni attacco.
 - Collisioni: il giocatore è un punto ai piedi (`player.y-26`), coerente con l'ancoraggio.
 - Il portiere ha `o.y` **animato in `update()`** (non solo disegnato): la collisione usa
   `o.y` corrente, quindi anche l'hitbox segue il tuffo.

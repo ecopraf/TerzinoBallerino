@@ -45,9 +45,11 @@ parte da sola.
 
 ## 🧓 Lezione del Vater (minigioco)
 
-Claudio si pianta nel cerchio e carica la bacchetta: spostati tra tre corsie e salta per
-finire fuori portata. Gli attacchi cambiano (centro, lato, tutto il campo) e la difficoltà
-sale col punteggio. Record salvato in locale.
+Claudio **non sta più fermo**: si sposta tra tre corsie, **ti segue** e continua a parlare
+mentre cammina (battute sempre diverse). La bacchetta colpisce **solo la corsia dove si
+trova lui**: spostati quando carica altrove, **salta** se ti sta addosso. La corsia in
+rosso è quella che sta per colpire. Più il livello sale, più spesso ti insegue. Record
+salvato in locale.
 
 ## 🗣️ Frasi dinamiche
 

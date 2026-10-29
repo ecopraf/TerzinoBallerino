@@ -91,15 +91,17 @@
   .mgStage{position:relative;width:100%;max-width:420px;height:min(46vh,320px);border-radius:18px;overflow:hidden;
     background:linear-gradient(180deg,#0a2e17,#125c2c 60%,#1f8a44);box-shadow:inset 0 0 0 3px rgba(255,255,255,.15)}
   .mgRing{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;
-    border:4px dashed rgba(255,212,0,.55)}
-  .mgLane{position:absolute;top:0;bottom:0;width:34%;background:rgba(255,212,0,.12)}
+    border:4px dashed rgba(255,212,0,.55);transition:left .16s ease}
+  .mgLane{position:absolute;top:0;bottom:0;width:34%;background:rgba(255,212,0,.12);
+    transition:left .16s ease, background .15s}
+  .mgLane.danger{background:rgba(255,45,149,.30)}
   .mgVater{position:absolute;left:50%;top:50%;width:86px;height:104px;margin:-52px 0 0 -43px;border-radius:16px;
     display:grid;place-items:center;font-size:38px;background:rgba(255,255,255,.85);overflow:hidden;
-    box-shadow:0 6px 18px rgba(0,0,0,.45), inset 0 0 0 4px var(--pink);transition:transform .07s}
+    box-shadow:0 6px 18px rgba(0,0,0,.45), inset 0 0 0 4px var(--pink);transition:left .16s ease}
   .mgVater img{width:100%;height:100%;object-fit:contain}
   .mgVater.armed{box-shadow:0 0 0 6px rgba(255,45,149,.55), inset 0 0 0 4px var(--pink)}
-  .mgStick{position:absolute;left:50%;top:50%;width:7px;height:0;margin-left:-3px;background:#8a5326;
-    border-radius:4px;transform-origin:bottom center;transition:height .07s}
+  .mgStick{position:absolute;left:50%;top:50%;width:7px;height:0;background:#8a5326;border-radius:4px;
+    transform:translateX(-50%);transform-origin:bottom center;transition:height .07s, left .16s ease}
   .mgStick.down{height:86px}
   .mgPlayer{position:absolute;left:50%;bottom:16px;width:72px;height:88px;margin-left:-36px;border-radius:16px;
     display:grid;place-items:center;font-size:34px;background:rgba(255,255,255,.85);overflow:hidden;
@@ -168,9 +170,9 @@
     <span>Record <b id="mgBest" style="color:var(--sun)">0</b></span>
   </div>
   <div class="mgStage" id="mgStage">
-    <div class="mgRing"></div>
-    <div class="mgLane" style="left:33%"></div>
-    <div class="mgWord" id="mgWord">Pronto? Claudio sale in cattedra.</div>
+    <div class="mgRing" id="mgRing"></div>
+    <div class="mgLane" id="mgLane" style="left:16.7%"></div>
+    <div class="mgWord" id="mgWord">Pronto? Claudio si sposta e ti segue.</div>
     <div class="mgPlayer" id="mgPlayer">🕺</div>
     <div class="mgStick" id="mgStick"></div>
     <div class="mgVater" id="mgVater">🧓</div>
@@ -258,7 +260,7 @@
     <p>💥 <b>La barra è anche la tua vita</b>: se ti prendono un pallone, un cono o un avversario perdi <b>1 di energia</b> e resti in gioco con un attimo di invulnerabilità. Si va avanti <b>finché la barra ha energia</b>: a <b>zero</b> il prossimo colpo è fatale. Puoi sbagliare, ma non troppo.</p>
     <p>🪩 <b>ENERGIA al massimo</b> → <b>BALLA MODE</b>: Luciano balla e <b>respinge tutto</b> (avversari, palloni, coni) rimandandoli indietro. Ogni respinta consuma 1 di energia: più outfit prendi, più a lungo balli.</p>
     <p>🧓 <b>Vater</b>: entra <b>Claudio</b>, il moralista del pallone. Convinto di «disegnare calcio» pur non muovendosi mai dal cerchio di centrocampo. Si pianta lì e bacchetta chi passa: <b>saltalo</b>. Tre bacchettate = richiamato in panchina. In BALLA MODE lo respingi anche lui.</p>
-    <p>🧓 <b>Lezione del Vater</b> (dal menu): mini-gioco di riflessi — schiva la bacchetta spostandoti e saltando, mentre Claudio ti insulta in base ai tuoi punti.</p>
+    <p>🧓 <b>Lezione del Vater</b> (dal menu): mini-gioco di riflessi — il Vater <b>si sposta tra le corsie e ti insegue</b>, parlando di continuo (ogni volta una frase diversa). La bacchetta colpisce <b>solo la corsia dove si trova lui</b>: spostati quando carica altrove, <b>salta</b> se ti sta addosso. La corsia rossa è quella che sta per colpire.</p>
     <p>✂️ <b>Ripulisci sfondo</b>: negli sticker tocca <b>✂️</b> per togliere lo sfondo di una foto (auto angoli o rimozione colore a mano).</p>
     <p>Più vai avanti, più il campetto si fa cattivo.</p>
   </div>
@@ -574,6 +576,26 @@ const SCORE_TIERS = [
 function tierFor(score){ let t=SCORE_TIERS[0]; for(const s of SCORE_TIERS){ if(score>=s.min) t=s; } return t; }
 function vaterSpawnLine(){ return pick(tierFor(G.score).spawn); }
 function vaterHitLine(){ return pick(tierFor(G.score).hit); }
+/* Frasi che Claudio dice mentre si sposta tra le corsie (una diversa ogni volta). */
+const VATER_TAUNTS = [
+  'Il cerchio mi segue: sono io il centrocampo.',
+  'Non scappare, Luciano: è inutile.',
+  'Mi sposto io, così impari la posizione.',
+  'Tu corri, io disegno calcio.',
+  'Ti seguo: il cerchio è ovunque io sia.',
+  'Ai miei tempi si stava fermi. Ma qui comando io.',
+  'Ti bacchetto dove meno te lo aspetti.',
+  'Questa la chiamo "zona Luciano".',
+  'Guarda come si occupa lo spazio.',
+  'Fermo lì! Non è ancora finita.',
+  'Il calcio è geometria. E io sono il compasso.',
+  'Balla pure, che io ti raggiungo.',
+  'Hai sbagliato corsia, giocatore.',
+  'Uno, due, tre: bacchettata per te.',
+  'Non è corsa, è disonore del centrocampo.',
+  'E adesso ti prendo da questa parte.',
+];
+function vaterTaunt(){ return pick(VATER_TAUNTS); }
 function spawnCoach(){
   const ref = MEDIA.referee.img && Math.random()<0.4;
   coach = { x:W+70, vx:-300, phase:'enter', t:0, whack:0, bob:0, hit:false, ref };
@@ -1206,18 +1228,31 @@ function saveEditor(){
 }
 
 /* ---------- mini-gioco: Lezione del Vater ---------- */
+/* Il Vater ora si MUOVE: cambia corsia, ti segue, e mentre si sposta continua a
+   parlare (una frase ogni volta diversa). La bacchetta colpisce SOLO la corsia in
+   cui si trova il Vater, quindi schivare e' un gioco di tempismo: spostati quando
+   NON e' nella tua corsia, salta quando ti sta addosso. */
 const MG = { on:false, score:0, lives:3, level:0, playing:false,
-  pos:1, jumping:false, armed:false, attack:'center', hit:false, t:0, cool:0, laser:0, best:+(localStorage.getItem('tb_mini_best')||0) };
+  pos:1, jumping:false, armed:false, attack:'center', hit:false, t:0, cool:0, laser:0,
+  vpos:1, vtarget:1, vmove:0, quip:0, best:+(localStorage.getItem('tb_mini_best')||0) };
 const MG_COLS = 3;
+const MG_LANE_PCT = [16.7, 50.0, 83.3];   /* centro di ogni corsia, in % */
+function mgLanePct(i){ return MG_LANE_PCT[clamp(i,0,MG_COLS-1)]; }
 function mgSetPos(i){
-  if(!MG.on) return;
   MG.pos=clamp(i,0,MG_COLS-1);
-  const p=$('mgPlayer');
-  p.style.left=(16.7+MG.pos*33.3)+'%';
+  $('mgPlayer').style.left=mgLanePct(MG.pos)+'%';
 }
 function mgSetJump(v){
   MG.jumping=v;
   $('mgPlayer').classList.toggle('hopping', v);
+}
+function mgPlaceVater(i){
+  MG.vpos=clamp(i,0,MG_COLS-1);
+  const pct=mgLanePct(MG.vpos)+'%';
+  $('mgVater').style.left=pct;
+  $('mgStick').style.left=pct;
+  $('mgLane').style.left=(MG_LANE_PCT[MG.vpos]-17)+'%';
+  $('mgRing').style.left=pct;
 }
 function mgLifes(){ $('mgLifes').textContent = '❤️'.repeat(Math.max(0,MG.lives)) + '🖤'.repeat(Math.max(0,3-MG.lives)); }
 function mgWord(txt){ $('mgWord').textContent = txt; }
@@ -1226,14 +1261,17 @@ function mgReset(){
   MG.phase='cool'; MG.cool=1.4; MG.t=0;
   MG.ref = Math.random()<0.4;
   mgSetJump(false); mgSetPos(1);
+  MG.vtarget=1; MG.vmove=0; MG.quip=2;
+  mgPlaceVater(1);
   $('mgScore').textContent=0; $('mgBest').textContent=MG.best;
   mgLifes();
   $('mgVater').classList.remove('armed'); $('mgStick').classList.remove('down');
+  $('mgLane').classList.remove('danger');
   mgWord('Pronto? Claudio sale in cattedra.');
 }
 function mgStartGame(){
   mgReset(); MG.on=true; MG.playing=true;
-  mgWord('Claudio carica la bacchetta… schiva!');
+  mgWord(vaterSpawnLine());
 }
 function mgStopGame(msg){
   MG.on=false; MG.playing=false;
@@ -1242,18 +1280,29 @@ function mgStopGame(msg){
   if(MG.score>MG.best){ MG.best=MG.score; localStorage.setItem('tb_mini_best',MG.best); }
   $('mgBest').textContent=MG.best;
 }
+/* Sceglie la prossima corsia del Vater: non troppo prevedibile, ma mai un salto
+   immediato sulla stessa corsia. Piu' il livello sale, piu' spesso ti segue. */
+function mgChooseVaterLane(){
+  const follow = Math.random() < clamp(0.35 + MG.level*0.08, 0.35, 0.8);
+  if(follow && MG.pos!==MG.vpos) return MG.pos;
+  const opts=[0,1,2].filter(c=>c!==MG.vpos);
+  return pick(opts);
+}
 function mgBeginAttack(){
   MG.armed=false; MG.hit=false;
   $('mgVater').classList.remove('armed'); $('mgStick').classList.remove('down');
-  const patterns = MG.level<2 ? ['center'] : MG.level<4 ? ['center','side'] : ['center','side','double'];
-  MG.attack = pick(patterns);
+  MG.attack='lane';                       /* colpisce la corsia in cui si trova il Vater */
   MG.t = clamp(0.9 - MG.level*0.07, 0.32, 0.9);
-  MG.phase = 'attack';
+  MG.phase='attack';
+  /* Il Vater si FERMA sulla corsia che ha telegrafato: si schiva spostandosi
+     (o saltando) prima che la bacchetta scenda. */
+  $('mgLane').classList.add('danger');
+  mgWord('“'+(Math.random()<0.5 ? vaterTaunt() : vaterSpawnLine())+'”');  /* parla mentre attacca */
 }
 function mgResolve(){
-  const lanes = MG.attack==='center' ? [1] : MG.attack==='side' ? [0,2] : [0,1,2];
-  const safe = MG.jumping && MG.pos>=1 && MG.pos<=2;
-  if(!safe && lanes.includes(MG.pos)){
+  const inLane = MG.vpos===MG.pos;
+  const safe = MG.jumping;
+  if(inLane && !safe){
     MG.lives--; MG.hit=true; mgLifes();
     const pl=$('mgPlayer'); pl.classList.add('wrong'); setTimeout(()=>pl.classList.remove('wrong'),220);
     mgWord('“'+vaterHitLine()+'”');
@@ -1262,13 +1311,22 @@ function mgResolve(){
     MG.score += 10 + MG.level*2;
     $('mgScore').textContent=MG.score;
     const pl=$('mgPlayer'); pl.classList.add('right'); setTimeout(()=>pl.classList.remove('right'),200);
-    mgWord(pick(['Schivato!','Fuori dal cerchio!','Il Vater disapprova.','Bel salto!','Non ti ha preso.']));
+    mgWord(pick(['Schivato!','Fuori dal cerchio!','Il Vater disapprova.','Bel salto!',
+                 'Non ti ha preso.','Troppo lento, Claudio!','Balla e scappa!']));
     if(MG.score>=100+MG.level*120) MG.level++;
   }
   $('mgStick').classList.remove('down');
+  $('mgLane').classList.remove('danger');
 }
 function mgTick(dt){
   if(!MG.playing) return;
+  /* il Vater si sposta verso la corsia bersaglio, parlando mentre cammina */
+  if(MG.vpos!==MG.vtarget){
+    MG.vmove += dt;
+    if(MG.vmove>=0.16){ MG.vmove=0; mgPlaceVater(MG.vpos + Math.sign(MG.vtarget-MG.vpos)); }
+  }
+  MG.quip -= dt;
+  if(MG.quip<=0){ MG.quip = 3.0 + Math.random()*2.4; if(MG.phase!=='attack') mgWord('“'+vaterTaunt()+'”'); }
   if(MG.phase==='cool'){
     MG.cool -= dt;
     if(MG.cool<=0.3 && !MG.armed){ MG.armed=true; $('mgVater').classList.add('armed'); }
@@ -1281,7 +1339,11 @@ function mgTick(dt){
     mgResolve();
     if(!MG.playing) return;
     MG.phase='cool';
-    MG.cool = clamp(0.75 - MG.level*0.04, 0.3, 0.75);
+    MG.vtarget = mgChooseVaterLane();     /* il Vater si riposiziona per il prossimo colpo */
+    /* il tempo di ricarica copre lo spostamento: il colpo resta sempre schivabile */
+    const passi = Math.abs(MG.vtarget - MG.vpos);
+    MG.cool = clamp(0.72 - MG.level*0.04, 0.3, 0.72) + passi*0.16;
+    MG.quip = 0.5 + Math.random()*1.2;
   }
 }
 function mgLoop(now){
